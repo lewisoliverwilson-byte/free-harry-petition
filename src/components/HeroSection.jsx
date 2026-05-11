@@ -1,35 +1,39 @@
-export default function HeroSection({ count }) {
+export default function HeroSection({ count, onViewSupporters }) {
   return (
-    <div className="flex flex-col items-center text-center px-4 pt-12 pb-8">
-      <div className="relative mb-8">
-        <div className="absolute inset-0 rounded-full bg-red-500 blur-2xl opacity-20 scale-110" />
+    <div className="flex flex-col items-center text-center">
+      <div className="relative mb-3">
+        <div className="absolute inset-0 rounded-full bg-red-500 blur-xl opacity-25 scale-125" />
         <img
           src="/harry.png"
           alt="Harry"
-          className="relative w-48 h-48 rounded-full object-cover object-top border-4 border-white shadow-2xl"
+          className="relative w-20 h-20 rounded-full object-cover object-top border-[3px] border-white shadow-xl"
         />
       </div>
 
-      <div className="inline-flex items-center gap-2 bg-red-100 text-red-700 text-sm font-semibold px-4 py-1.5 rounded-full mb-4">
-        <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+      <div className="inline-flex items-center gap-1.5 bg-red-100 text-red-700 text-xs font-semibold px-3 py-1 rounded-full mb-2">
+        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
         OFFICIAL PETITION
       </div>
 
-      <h1 className="text-5xl sm:text-6xl font-black text-gray-900 leading-tight mb-4">
+      <h1 className="text-5xl font-black text-gray-900 tracking-tight mb-1">
         #FREEHARRY
       </h1>
 
-      <p className="text-gray-500 text-lg max-w-md mb-6">
-        We, the people who love Harry, believe he deserves better.
-        Add your name to the growing list of concerned citizens.
+      <p className="text-gray-400 text-sm mb-3">
+        Harry deserves better. Add your voice.
       </p>
 
-      <div className="flex items-baseline gap-2">
-        <span className="text-5xl font-black text-gray-900">{count.toLocaleString()}</span>
-        <span className="text-gray-500 font-medium">
+      <button
+        onClick={onViewSupporters}
+        disabled={count === 0}
+        className="flex items-baseline gap-2 hover:opacity-70 transition-opacity disabled:pointer-events-none"
+      >
+        <span className="text-4xl font-black text-gray-900">{count.toLocaleString()}</span>
+        <span className="text-gray-400 text-sm font-medium">
           {count === 1 ? 'person agrees' : 'people agree'}
+          {count > 0 && <span className="text-red-400 ml-1">— see who →</span>}
         </span>
-      </div>
+      </button>
     </div>
   )
 }
