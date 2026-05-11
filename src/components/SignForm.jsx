@@ -19,8 +19,9 @@ export default function SignForm({ onSigned }) {
       setSignerName(name.trim())
       setSigned(true)
       onSigned?.()
-    } catch {
-      setError('Something went wrong. Please try again.')
+    } catch (err) {
+      console.error('Sign error:', err)
+      setError(`Error: ${err.message}`)
     } finally {
       setLoading(false)
     }

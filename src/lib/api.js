@@ -12,6 +12,9 @@ export async function postSignature(name, reason = null) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, reason }),
   });
-  if (!res.ok) throw new Error('Failed to sign');
+  if (!res.ok) {
+    const body = await res.text().catch(() => '')
+    throw new Error(`HTTP ${res.status}: ${body}`)
+  }
   return res.json();
 }
