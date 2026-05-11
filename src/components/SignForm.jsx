@@ -3,6 +3,7 @@ import { postSignature } from '../lib/api'
 
 export default function SignForm({ onSigned }) {
   const [name, setName] = useState('')
+  const [reason, setReason] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [signed, setSigned] = useState(false)
@@ -14,7 +15,7 @@ export default function SignForm({ onSigned }) {
     setLoading(true)
     setError(null)
     try {
-      await postSignature(name.trim())
+      await postSignature(name.trim(), reason.trim() || null)
       setSignerName(name.trim())
       setSigned(true)
       onSigned?.()
@@ -45,6 +46,14 @@ export default function SignForm({ onSigned }) {
         maxLength={60}
         required
         className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent text-base shadow-sm"
+      />
+      <textarea
+        value={reason}
+        onChange={e => setReason(e.target.value)}
+        placeholder="Why should Harry be free? (optional)"
+        maxLength={280}
+        rows={3}
+        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent text-base shadow-sm resize-none"
       />
       <button
         type="submit"

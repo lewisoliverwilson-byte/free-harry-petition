@@ -6,11 +6,11 @@ export async function getSignatures() {
   return res.json();
 }
 
-export async function postSignature(name) {
+export async function postSignature(name, reason = null) {
   const res = await fetch(`${BASE}/signatures`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name }),
+    body: JSON.stringify({ name, reason }),
   });
   if (!res.ok) throw new Error('Failed to sign');
   return res.json();

@@ -22,18 +22,23 @@ export default function SignatureLog({ signatures }) {
       <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-3 text-center">
         Recent Signers
       </h2>
-      <div className="flex flex-col gap-2 max-h-72 overflow-y-auto pr-1">
+      <div className="flex flex-col gap-2 max-h-96 overflow-y-auto pr-1">
         {signatures.map(sig => (
           <div
             key={sig.id}
-            className="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100 shadow-sm"
+            className="flex items-start gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100 shadow-sm"
           >
-            <span className="text-2xl select-none">{getAvatar(sig.name)}</span>
+            <span className="text-2xl select-none mt-0.5">{getAvatar(sig.name)}</span>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-gray-900 truncate">{sig.name}</p>
-              <p className="text-xs text-gray-400">signed {timeAgo(sig.signed_at)}</p>
+              <div className="flex items-center justify-between gap-2">
+                <p className="font-semibold text-gray-900 truncate">{sig.name}</p>
+                <span className="text-xs text-gray-400 shrink-0">{timeAgo(sig.signed_at)}</span>
+              </div>
+              {sig.reason && (
+                <p className="text-sm text-gray-500 mt-1 leading-snug">"{sig.reason}"</p>
+              )}
             </div>
-            <span className="text-green-500 text-lg">✓</span>
+            <span className="text-green-500 text-lg mt-0.5">✓</span>
           </div>
         ))}
       </div>

@@ -10,9 +10,9 @@ const CORS = {
   "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
 };
 
-const json = (statusCode, body, extra = {}) => ({
+const json = (statusCode, body) => ({
   statusCode,
-  headers: { ...CORS, "Content-Type": "application/json", ...extra },
+  headers: { ...CORS, "Content-Type": "application/json" },
   body: JSON.stringify(body),
 });
 
@@ -24,19 +24,35 @@ export const handler = async (event) => {
   if (method === "GET") {
     const { Items = [] } = await db.send(new ScanCommand({ TableName: TABLE }));
     const signatures = Items
-      .map(i => ({ id: i.id.S, name: i.name.S, signed_at: i.signed_at.S }))
+      .map(i => ({
+        id: i.id.S,
+        name: i.name.S,
+        signed_at: i.signed_at.S,
+        reason: i.reason?.S ?? null,
+      }))
       .sort((a, b) => new Date(b.signed_at) - new Date(a.signed_at));
     return json(200, signatures);
   }
 
   if (method === "POST") {
-    const { name } = JSON.parse(event.body ?? "{}");
+    const { name, reason } = JSON.parse(event.body ?? "{}");
     if (!name?.trim()) return json(400, { error: "Name is required" });
-    const item = { id: randomUUID(), name: name.trim(), signed_at: new Date().toISOString() };
-    await db.send(new PutItemCommand({
-      TableName: TABLE,
-      Item: { id: { S: item.id }, name: { S: item.name }, signed_at: { S: item.signed_at } },
-    }));
+
+    const item = {
+      id: randomUUID(),
+      name: name.trim(),
+      signed_at: new Date().toISOString(),
+      ...(reason?.trim() && { reason: reason.trim() }),
+    };
+
+    const dbItem = {
+      id: { S: item.id },
+      name: { S: item.name },
+      signed_at: { S: item.signed_at },
+      ...(item.reason && { reason: { S: item.reason } }),
+    };
+
+    await db.send(new PutItemCommand({ TableName: TABLE, Item: dbItem }));
     return json(201, item);
   }
 

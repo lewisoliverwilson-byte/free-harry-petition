@@ -15,9 +15,8 @@ export default function HeroSection({ count }) {
         OFFICIAL PETITION
       </div>
 
-      <h1 className="text-4xl sm:text-5xl font-black text-gray-900 leading-tight max-w-xl mb-4">
-        Harry Should Break Up<br />
-        <span className="text-red-600">With Cara.</span>
+      <h1 className="text-5xl sm:text-6xl font-black text-gray-900 leading-tight mb-4">
+        #FREEHARRY
       </h1>
 
       <p className="text-gray-500 text-lg max-w-md mb-6">
