@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { supabase } from './lib/supabase'
+import { useState, useEffect, useCallback } from 'react'
+import { getSignatures } from './lib/api'
 import HeroSection from './components/HeroSection'
 import SignForm from './components/SignForm'
 import SignatureLog from './components/SignatureLog'
@@ -8,29 +8,22 @@ export default function App() {
   const [signatures, setSignatures] = useState([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetchSignatures()
-
-    const channel = supabase
-      .channel('public:signatures')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'signatures' },
-        payload => setSignatures(prev => [payload.new, ...prev])
-      )
-      .subscribe()
-
-    return () => supabase.removeChannel(channel)
+  const fetchSignatures = useCallback(async () => {
+    try {
+      const data = await getSignatures()
+      setSignatures(data)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
-  async function fetchSignatures() {
-    const { data } = await supabase
-      .from('signatures')
-      .select('*')
-      .order('signed_at', { ascending: false })
-    if (data) setSignatures(data)
-    setLoading(false)
-  }
+  useEffect(() => {
+    fetchSignatures()
+    const interval = setInterval(fetchSignatures, 10000)
+    return () => clearInterval(interval)
+  }, [fetchSignatures])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -38,7 +31,7 @@ export default function App() {
         <HeroSection count={loading ? '—' : signatures.length} />
 
         <div className="px-4 flex flex-col gap-8">
-          <SignForm />
+          <SignForm onSigned={fetchSignatures} />
           {!loading && <SignatureLog signatures={signatures} />}
         </div>
 

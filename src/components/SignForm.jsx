@@ -1,29 +1,28 @@
 import { useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { postSignature } from '../lib/api'
 
 export default function SignForm({ onSigned }) {
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [signed, setSigned] = useState(false)
+  const [signerName, setSignerName] = useState('')
 
   async function handleSubmit(e) {
     e.preventDefault()
     if (!name.trim()) return
     setLoading(true)
     setError(null)
-
-    const { error: err } = await supabase
-      .from('signatures')
-      .insert({ name: name.trim() })
-
-    if (err) {
-      setError('Something went wrong. Please try again.')
-    } else {
+    try {
+      await postSignature(name.trim())
+      setSignerName(name.trim())
       setSigned(true)
       onSigned?.()
+    } catch {
+      setError('Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   if (signed) {
@@ -31,7 +30,7 @@ export default function SignForm({ onSigned }) {
       <div className="flex flex-col items-center gap-3 py-8 px-6 bg-green-50 rounded-2xl border border-green-200">
         <div className="text-4xl">✅</div>
         <p className="text-green-800 font-bold text-xl">You're on the list!</p>
-        <p className="text-green-600 text-sm">Thanks for standing with Harry, {name}.</p>
+        <p className="text-green-600 text-sm">Thanks for standing with Harry, {signerName}.</p>
       </div>
     )
   }
