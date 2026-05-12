@@ -45,8 +45,8 @@ export default function SupportersModal({ signatures, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-3 pb-3 border-b border-gray-100">
           <div>
-            <h2 className="font-black text-xl text-gray-900">Supporters</h2>
-            <p className="text-xs text-gray-400">{signatures.length} people showing their support</p>
+            <h2 className="font-black text-xl text-gray-900">Messages of Support</h2>
+            <p className="text-xs text-gray-400">{signatures.length} messages</p>
           </div>
           <button
             onClick={onClose}
@@ -59,25 +59,39 @@ export default function SupportersModal({ signatures, onClose }) {
         {/* List */}
         <div className="overflow-y-auto flex-1 px-4 py-3 space-y-2">
           {signatures.length === 0 && (
-            <p className="text-center text-gray-400 text-sm py-8">No signatures yet. Be the first!</p>
+            <p className="text-center text-gray-400 text-sm py-8">No messages yet. Be the first!</p>
           )}
-          {signatures.map((sig, i) => (
-            <div
-              key={sig.id}
-              className="flex items-start gap-3 bg-gray-50 rounded-2xl px-4 py-3"
-            >
-              <span className="text-xl select-none mt-0.5">{getAvatar(sig.name)}</span>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="font-semibold text-gray-900 text-sm truncate">{sig.name}</p>
-                  <span className="text-xs text-gray-400 shrink-0">{timeAgo(sig.signed_at)}</span>
+          {signatures.map((sig) => {
+            const isPro = sig.type === 'pro'
+            return (
+              <div
+                key={sig.id}
+                className={`flex items-start gap-3 rounded-2xl px-4 py-3 ${isPro ? 'bg-red-50' : 'bg-gray-50'}`}
+              >
+                <span className="text-xl select-none mt-0.5">{getAvatar(sig.name)}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className={`font-semibold text-sm truncate ${isPro ? 'text-red-600' : 'text-gray-900'}`}>
+                      {isPro && '❤️ '}{sig.name}
+                    </p>
+                    <span className="text-xs text-gray-400 shrink-0">{timeAgo(sig.signed_at)}</span>
+                  </div>
+                  {sig.reason && (
+                    <p className={`text-sm mt-0.5 leading-snug ${isPro ? 'text-red-500' : 'text-gray-500'}`}>
+                      "{sig.reason}"
+                    </p>
+                  )}
+                  {sig.photo && (
+                    <img
+                      src={sig.photo}
+                      alt=""
+                      className="mt-2 w-full max-h-48 object-cover rounded-xl"
+                    />
+                  )}
                 </div>
-                {sig.reason && (
-                  <p className="text-sm text-gray-500 mt-0.5 leading-snug">"{sig.reason}"</p>
-                )}
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         {/* Footer */}

@@ -6,11 +6,11 @@ export async function getSignatures() {
   return res.json();
 }
 
-export async function postSignature(name, reason = null) {
+export async function postSignature(name, reason = null, photo = null, type = 'against') {
   const res = await fetch(`${BASE}/signatures`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, reason }),
+    body: JSON.stringify({ name, reason, photo, type }),
   });
   if (!res.ok) {
     const body = await res.text().catch(() => '')

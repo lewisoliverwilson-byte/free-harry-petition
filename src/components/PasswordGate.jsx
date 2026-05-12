@@ -1,20 +1,17 @@
 import { useState } from 'react'
 
 const PASSWORDS = ['MONTY']
-const STORAGE_KEY = 'petition_unlocked'
 
 export default function PasswordGate({ children }) {
-  const [unlocked, setUnlocked] = useState(
-    () => sessionStorage.getItem(STORAGE_KEY) === '1'
-  )
+  // No sessionStorage — every refresh requires re-entry
+  const [step, setStep] = useState('password') // 'password' | 'disclaimer' | 'done'
   const [input, setInput] = useState('')
   const [shake, setShake] = useState(false)
 
   function handleSubmit(e) {
     e.preventDefault()
-    if (PASSWORDS.includes(input)) {
-      sessionStorage.setItem(STORAGE_KEY, '1')
-      setUnlocked(true)
+    if (PASSWORDS.includes(input.toUpperCase())) {
+      setStep('disclaimer')
     } else {
       setShake(true)
       setInput('')
@@ -22,7 +19,40 @@ export default function PasswordGate({ children }) {
     }
   }
 
-  if (unlocked) return children
+  if (step === 'done') return children
+
+  if (step === 'disclaimer') {
+    return (
+      <div className="h-dvh bg-black flex flex-col items-center justify-center px-8">
+        <div className="w-full max-w-sm flex flex-col gap-6">
+          <h1 className="text-white text-3xl font-black tracking-widest text-center select-none">
+            BEFORE YOU CONTINUE
+          </h1>
+          <div className="bg-white/10 border border-white/20 rounded-2xl p-5">
+            <p className="text-white/80 text-sm leading-relaxed text-center">
+              THE MAKER OF THIS WEBSITE TAKES NO RESPONSIBILITY FOR ANY MESSAGES,
+              THEMES, OR IMAGES ON THIS SITE AND CANNOT BE TAKEN ACCOUNTABLE.
+              BY CONTINUING YOU AGREE.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={() => setStep('done')}
+              className="w-full py-3.5 bg-white text-black font-black rounded-xl hover:bg-white/90 transition-colors text-sm tracking-wide"
+            >
+              I AGREE — CONTINUE
+            </button>
+            <button
+              onClick={() => setStep('password')}
+              className="w-full py-2.5 text-white/30 hover:text-white/60 font-medium rounded-xl transition-colors text-xs"
+            >
+              Go back
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="h-dvh bg-black flex flex-col items-center justify-center px-8">

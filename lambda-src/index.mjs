@@ -29,27 +29,35 @@ export const handler = async (event) => {
         name: i.name.S,
         signed_at: i.signed_at.S,
         reason: i.reason?.S ?? null,
+        photo: i.photo?.S ?? null,
+        type: i.type?.S ?? "against",
       }))
       .sort((a, b) => new Date(b.signed_at) - new Date(a.signed_at));
     return json(200, signatures);
   }
 
   if (method === "POST") {
-    const { name, reason } = JSON.parse(event.body ?? "{}");
+    const { name, reason, photo, type } = JSON.parse(event.body ?? "{}");
     if (!name?.trim()) return json(400, { error: "Name is required" });
+
+    const itemType = type === "pro" ? "pro" : "against";
 
     const item = {
       id: randomUUID(),
       name: name.trim(),
       signed_at: new Date().toISOString(),
+      type: itemType,
       ...(reason?.trim() && { reason: reason.trim() }),
+      ...(photo && { photo }),
     };
 
     const dbItem = {
       id: { S: item.id },
       name: { S: item.name },
       signed_at: { S: item.signed_at },
+      type: { S: item.type },
       ...(item.reason && { reason: { S: item.reason } }),
+      ...(item.photo && { photo: { S: item.photo } }),
     };
 
     await db.send(new PutItemCommand({ TableName: TABLE, Item: dbItem }));
