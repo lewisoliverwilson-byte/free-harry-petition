@@ -167,6 +167,7 @@ export default function App() {
         <SupportersModal
           signatures={signatures}
           onClose={() => setModalOpen(false)}
+          onRefresh={fetchSignatures}
         />
       )}
     </div>

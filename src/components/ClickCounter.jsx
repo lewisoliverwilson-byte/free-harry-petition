@@ -9,7 +9,7 @@ export default function ClickCounter({ glass = false }) {
     getClickCount().then(d => setCount(d.count)).catch(() => {})
     const t = setInterval(
       () => getClickCount().then(d => setCount(d.count)).catch(() => {}),
-      10000
+      5000
     )
     return () => clearInterval(t)
   }, [])

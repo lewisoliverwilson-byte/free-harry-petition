@@ -10,7 +10,7 @@ import { randomUUID } from "crypto";
 
 const db  = new DynamoDBClient({ region: process.env.AWS_REGION });
 const rek = new RekognitionClient({ region: process.env.AWS_REGION });
-const TABLE = "petition-signatures";
+const TABLE     = "petition-signatures";
 const CLICKS_KEY = "__clicks__";
 
 const CORS = {
@@ -52,7 +52,7 @@ export const handler = async (event) => {
 
   if (method === "OPTIONS") return { statusCode: 200, headers: CORS, body: "" };
 
-  // ── /clicks ──────────────────────────────────────────────────────────────
+  // ── /clicks ───────────────────────────────────────────────────────────────
   if (path.endsWith("/clicks")) {
     if (method === "GET") {
       const { Item } = await db.send(new GetItemCommand({
@@ -61,7 +61,6 @@ export const handler = async (event) => {
       }));
       return json(200, { count: parseInt(Item?.count?.N ?? "0", 10) });
     }
-
     if (method === "POST") {
       const { Attributes } = await db.send(new UpdateItemCommand({
         TableName: TABLE,
@@ -75,49 +74,77 @@ export const handler = async (event) => {
     }
   }
 
+  // ── /vote ─────────────────────────────────────────────────────────────────
+  if (path.endsWith("/vote")) {
+    if (method === "POST") {
+      const { id, direction } = JSON.parse(event.body ?? "{}");
+      if (!id || !["up", "down"].includes(direction))
+        return json(400, { error: "id and direction (up|down) required" });
+
+      const field = direction === "up" ? "upvotes" : "downvotes";
+      const { Attributes } = await db.send(new UpdateItemCommand({
+        TableName: TABLE,
+        Key: { id: { S: id } },
+        UpdateExpression: "ADD #f :one",
+        ExpressionAttributeNames: { "#f": field },
+        ExpressionAttributeValues: { ":one": { N: "1" } },
+        ReturnValues: "UPDATED_NEW",
+      }));
+      return json(200, {
+        upvotes:   parseInt(Attributes.upvotes?.N   ?? "0", 10),
+        downvotes: parseInt(Attributes.downvotes?.N ?? "0", 10),
+      });
+    }
+  }
+
   // ── /signatures ───────────────────────────────────────────────────────────
   if (method === "GET") {
     const { Items = [] } = await db.send(new ScanCommand({ TableName: TABLE }));
     const signatures = Items
       .filter(i => i.id.S !== CLICKS_KEY)
       .map(i => ({
-        id: i.id.S,
-        name: i.name.S,
-        signed_at: i.signed_at.S,
-        reason: i.reason?.S ?? null,
-        photo: i.photo?.S ?? null,
+        id:             i.id.S,
+        name:           i.name.S,
+        signed_at:      i.signed_at.S,
+        reason:         i.reason?.S         ?? null,
+        photo:          i.photo?.S          ?? null,
         photo_position: i.photo_position?.S ?? null,
-        type: i.type?.S ?? "against",
+        type:           i.type?.S           ?? "against",
+        parent_id:      i.parent_id?.S      ?? null,
+        upvotes:        parseInt(i.upvotes?.N   ?? "0", 10),
+        downvotes:      parseInt(i.downvotes?.N ?? "0", 10),
       }))
       .sort((a, b) => new Date(b.signed_at) - new Date(a.signed_at));
     return json(200, signatures);
   }
 
   if (method === "POST") {
-    const { name, reason, photo, type } = JSON.parse(event.body ?? "{}");
+    const { name, reason, photo, type, parent_id } = JSON.parse(event.body ?? "{}");
     if (!name?.trim()) return json(400, { error: "Name is required" });
 
     const itemType = type === "pro" ? "pro" : "against";
     const photoPosition = photo ? await detectFacePosition(photo) : null;
 
     const item = {
-      id: randomUUID(),
-      name: name.trim(),
+      id:        randomUUID(),
+      name:      name.trim(),
       signed_at: new Date().toISOString(),
-      type: itemType,
-      ...(reason?.trim() && { reason: reason.trim() }),
-      ...(photo && { photo }),
-      ...(photoPosition && { photo_position: photoPosition }),
+      type:      itemType,
+      ...(reason?.trim()   && { reason: reason.trim() }),
+      ...(photo            && { photo }),
+      ...(photoPosition    && { photo_position: photoPosition }),
+      ...(parent_id        && { parent_id }),
     };
 
     const dbItem = {
-      id: { S: item.id },
-      name: { S: item.name },
+      id:        { S: item.id },
+      name:      { S: item.name },
       signed_at: { S: item.signed_at },
-      type: { S: item.type },
-      ...(item.reason && { reason: { S: item.reason } }),
-      ...(item.photo && { photo: { S: item.photo } }),
+      type:      { S: item.type },
+      ...(item.reason        && { reason:         { S: item.reason } }),
+      ...(item.photo         && { photo:           { S: item.photo } }),
       ...(item.photo_position && { photo_position: { S: item.photo_position } }),
+      ...(item.parent_id     && { parent_id:       { S: item.parent_id } }),
     };
 
     await db.send(new PutItemCommand({ TableName: TABLE, Item: dbItem }));

@@ -13,8 +13,13 @@ function getAvatar(name) {
   return AVATARS[Math.abs(hash) % AVATARS.length]
 }
 
+function score(sig) { return (sig.upvotes ?? 0) - (sig.downvotes ?? 0) }
+
 export default function RecentSigners({ signatures, onSeeAll }) {
-  const recent = signatures.slice(0, 5)
+  const recent = signatures
+    .filter(s => !s.parent_id)
+    .sort((a, b) => score(b) - score(a) || new Date(b.signed_at) - new Date(a.signed_at))
+    .slice(0, 5)
 
   return (
     <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/15 shadow-2xl overflow-hidden flex flex-col">
@@ -51,6 +56,12 @@ export default function RecentSigners({ signatures, onSeeAll }) {
                     alt=""
                     className="mt-1.5 w-full max-h-28 object-cover rounded-lg"
                   />
+                )}
+                {((sig.upvotes ?? 0) > 0 || (sig.downvotes ?? 0) > 0) && (
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs text-white/40">👍 {sig.upvotes ?? 0}</span>
+                    <span className="text-xs text-white/40">👎 {sig.downvotes ?? 0}</span>
+                  </div>
                 )}
               </div>
             </div>

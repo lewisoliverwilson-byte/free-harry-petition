@@ -1,22 +1,33 @@
 import { useState } from 'react'
 
-const PASSWORDS = ['MONTY']
+const PASSWORDS    = ['MONTY']
+const KEY_UNLOCKED = 'petition_unlocked'
+const KEY_AGREED   = 'petition_agreed'
 
 export default function PasswordGate({ children }) {
-  // No sessionStorage — every refresh requires re-entry
-  const [step, setStep] = useState('password') // 'password' | 'disclaimer' | 'done'
+  const [step, setStep] = useState(() => {
+    if (sessionStorage.getItem(KEY_AGREED) === '1') return 'done'
+    if (sessionStorage.getItem(KEY_UNLOCKED) === '1') return 'disclaimer'
+    return 'password'
+  })
   const [input, setInput] = useState('')
   const [shake, setShake] = useState(false)
 
   function handleSubmit(e) {
     e.preventDefault()
     if (PASSWORDS.includes(input.toUpperCase())) {
+      sessionStorage.setItem(KEY_UNLOCKED, '1')
       setStep('disclaimer')
     } else {
       setShake(true)
       setInput('')
       setTimeout(() => setShake(false), 500)
     }
+  }
+
+  function handleAgree() {
+    sessionStorage.setItem(KEY_AGREED, '1')
+    setStep('done')
   }
 
   if (step === 'done') return children
@@ -37,13 +48,13 @@ export default function PasswordGate({ children }) {
           </div>
           <div className="flex flex-col gap-2">
             <button
-              onClick={() => setStep('done')}
+              onClick={handleAgree}
               className="w-full py-3.5 bg-white text-black font-black rounded-xl hover:bg-white/90 transition-colors text-sm tracking-wide"
             >
               I AGREE — CONTINUE
             </button>
             <button
-              onClick={() => setStep('password')}
+              onClick={() => { sessionStorage.removeItem(KEY_UNLOCKED); setStep('password') }}
               className="w-full py-2.5 text-white/30 hover:text-white/60 font-medium rounded-xl transition-colors text-xs"
             >
               Go back
