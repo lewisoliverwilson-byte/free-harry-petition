@@ -57,8 +57,12 @@ export default function App() {
         <div className="flex flex-col items-center text-center gap-3">
           <h1 className="text-6xl font-black text-white leading-none tracking-tight"
             style={{ textShadow: '0 4px 24px rgba(0,0,0,0.6)' }}>
-            #FREE<br />HARRY
+            HARRY<br />&amp; CARA
           </h1>
+          <p className="text-white/70 text-sm font-medium max-w-xs"
+            style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
+            We love them both — we just think they shine brighter apart ❤️
+          </p>
           <button
             onClick={() => setModalOpen(true)}
             disabled={count === 0}
@@ -75,7 +79,7 @@ export default function App() {
         {/* Bottom form card */}
         <div className="flex flex-col gap-3">
           <p className="text-white/60 text-xs text-center tracking-wide uppercase font-semibold">
-            Harry deserves better — add your name
+            Add your name to show your support
           </p>
           <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-4 border border-white/15 shadow-2xl">
             <SignForm glass onSigned={fetchSignatures} />

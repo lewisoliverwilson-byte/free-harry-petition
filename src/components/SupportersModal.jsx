@@ -46,7 +46,7 @@ export default function SupportersModal({ signatures, onClose }) {
         <div className="flex items-center justify-between px-5 pt-3 pb-3 border-b border-gray-100">
           <div>
             <h2 className="font-black text-xl text-gray-900">Supporters</h2>
-            <p className="text-xs text-gray-400">{signatures.length} people standing with Harry</p>
+            <p className="text-xs text-gray-400">{signatures.length} people showing their support</p>
           </div>
           <button
             onClick={onClose}
@@ -82,7 +82,7 @@ export default function SupportersModal({ signatures, onClose }) {
 
         {/* Footer */}
         <div className="px-5 py-4 border-t border-gray-100">
-          <p className="text-center text-xs text-gray-400">#FreeHarry — he deserves better</p>
+          <p className="text-center text-xs text-gray-400">We love you both ❤️</p>
         </div>
       </div>
     </div>

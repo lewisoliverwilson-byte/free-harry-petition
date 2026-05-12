@@ -60,7 +60,7 @@ export default function SignForm({ onSigned, glass = false }) {
       <textarea
         value={reason}
         onChange={e => setReason(e.target.value)}
-        placeholder="Why should Harry be free? (optional)"
+        placeholder="Why do you think they're better apart? (optional)"
         maxLength={280}
         rows={2}
         className={`${inputClass} resize-none`}
