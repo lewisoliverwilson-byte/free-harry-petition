@@ -28,7 +28,7 @@ export default function App() {
   const count = loading ? 0 : signatures.length
 
   return (
-    <div className="h-dvh relative overflow-hidden max-w-sm mx-auto w-full">
+    <div className="h-dvh relative overflow-hidden w-full">
 
       {/* Full-screen background */}
       <img
@@ -43,7 +43,7 @@ export default function App() {
       />
 
       {/* Content layer */}
-      <div className="relative h-full flex flex-col justify-between px-5 pt-10 pb-7">
+      <div className="relative h-full flex flex-col justify-between px-5 pt-10 pb-7 max-w-lg mx-auto w-full">
 
         {/* Top badge */}
         <div className="flex justify-center">
