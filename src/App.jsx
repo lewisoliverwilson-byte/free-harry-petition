@@ -5,13 +5,13 @@ import SupportersModal from './components/SupportersModal'
 import RecentSigners from './components/RecentSigners'
 
 const SLIDES = [
-  '/harry.png',
-  '/IMG_2965.png',
-  '/IMG_2966.png',
-  '/IMG_2967.png',
-  '/IMG_2968.png',
-  '/IMG_2969.png',
-  '/IMG_2970.png',
+  { src: '/harry.png',     pos: 'center 15%' },
+  { src: '/IMG_2965.png',  pos: 'center 20%' },
+  { src: '/IMG_2966.png',  pos: 'center 40%' },
+  { src: '/IMG_2967.png',  pos: 'center 25%' },
+  { src: '/IMG_2968.png',  pos: 'center 18%' },
+  { src: '/IMG_2969.png',  pos: 'center 44%' },
+  { src: '/IMG_2970.png',  pos: 'center 48%' },
 ]
 
 function BackgroundSlideshow() {
@@ -24,14 +24,15 @@ function BackgroundSlideshow() {
 
   return (
     <>
-      {SLIDES.map((src, i) => (
+      {SLIDES.map(({ src, pos }, i) => (
         <img
           key={src}
           src={src}
           alt=""
-          className={`absolute inset-0 w-full h-full object-cover object-[center_30%] transition-opacity duration-1000 ${
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
             i === current ? 'opacity-100' : 'opacity-0'
           }`}
+          style={{ objectPosition: pos }}
         />
       ))}
     </>
