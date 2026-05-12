@@ -1,10 +1,17 @@
-import { DynamoDBClient, ScanCommand, PutItemCommand } from "@aws-sdk/client-dynamodb";
+import {
+  DynamoDBClient,
+  ScanCommand,
+  PutItemCommand,
+  GetItemCommand,
+  UpdateItemCommand,
+} from "@aws-sdk/client-dynamodb";
 import { RekognitionClient, DetectFacesCommand } from "@aws-sdk/client-rekognition";
 import { randomUUID } from "crypto";
 
-const db = new DynamoDBClient({ region: process.env.AWS_REGION });
+const db  = new DynamoDBClient({ region: process.env.AWS_REGION });
 const rek = new RekognitionClient({ region: process.env.AWS_REGION });
 const TABLE = "petition-signatures";
+const CLICKS_KEY = "__clicks__";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -26,7 +33,6 @@ async function detectFacePosition(dataUrl) {
       Image: { Bytes: bytes },
     }));
     if (!FaceDetails.length) return null;
-    // Pick the largest face by area
     const face = FaceDetails.sort(
       (a, b) =>
         b.BoundingBox.Width * b.BoundingBox.Height -
@@ -42,12 +48,38 @@ async function detectFacePosition(dataUrl) {
 
 export const handler = async (event) => {
   const method = event.requestContext?.http?.method ?? "GET";
+  const path   = event.rawPath ?? "/";
 
   if (method === "OPTIONS") return { statusCode: 200, headers: CORS, body: "" };
 
+  // ── /clicks ──────────────────────────────────────────────────────────────
+  if (path.endsWith("/clicks")) {
+    if (method === "GET") {
+      const { Item } = await db.send(new GetItemCommand({
+        TableName: TABLE,
+        Key: { id: { S: CLICKS_KEY } },
+      }));
+      return json(200, { count: parseInt(Item?.count?.N ?? "0", 10) });
+    }
+
+    if (method === "POST") {
+      const { Attributes } = await db.send(new UpdateItemCommand({
+        TableName: TABLE,
+        Key: { id: { S: CLICKS_KEY } },
+        UpdateExpression: "ADD #n :one",
+        ExpressionAttributeNames: { "#n": "count" },
+        ExpressionAttributeValues: { ":one": { N: "1" } },
+        ReturnValues: "UPDATED_NEW",
+      }));
+      return json(200, { count: parseInt(Attributes.count.N, 10) });
+    }
+  }
+
+  // ── /signatures ───────────────────────────────────────────────────────────
   if (method === "GET") {
     const { Items = [] } = await db.send(new ScanCommand({ TableName: TABLE }));
     const signatures = Items
+      .filter(i => i.id.S !== CLICKS_KEY)
       .map(i => ({
         id: i.id.S,
         name: i.name.S,

@@ -3,6 +3,7 @@ import { getSignatures } from './lib/api'
 import SignForm from './components/SignForm'
 import SupportersModal from './components/SupportersModal'
 import RecentSigners from './components/RecentSigners'
+import ClickCounter from './components/ClickCounter'
 
 const SLIDES = [
   { src: '/harry.png',     pos: 'center 15%' },
@@ -101,6 +102,8 @@ export default function App() {
             </p>
           </div>
 
+          <ClickCounter glass />
+
           <div className="flex flex-col gap-2">
             <p className="text-white/50 text-xs tracking-wide uppercase font-semibold">
               Add your message
@@ -141,6 +144,8 @@ export default function App() {
         </div>
 
         <div className="flex flex-col gap-3">
+          <ClickCounter glass />
+
           <p className="text-white/60 text-xs text-center tracking-wide uppercase font-semibold">
             Add your message
           </p>
