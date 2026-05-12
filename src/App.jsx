@@ -30,54 +30,64 @@ export default function App() {
   return (
     <div className="h-dvh relative overflow-hidden max-w-sm mx-auto w-full">
 
-      {/* Full-screen background photo */}
+      {/* Full-screen background */}
       <img
         src="/harry.png"
         alt="Harry"
-        className="absolute inset-0 w-full h-full object-cover object-[center_20%]"
+        className="absolute inset-0 w-full h-full object-cover object-[center_15%]"
       />
 
-      {/* Gradient overlay — light at top, dark at bottom for form readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/80" />
+      {/* Multi-stop gradient: transparent top → heavy dark bottom */}
+      <div className="absolute inset-0"
+        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.88) 100%)' }}
+      />
 
-      {/* Content */}
-      <div className="relative h-full flex flex-col justify-between px-5 py-8">
+      {/* Content layer */}
+      <div className="relative h-full flex flex-col justify-between px-5 pt-10 pb-7">
 
-        {/* Top — headline */}
-        <div className="flex flex-col items-center text-center pt-2">
-          <div className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-bold px-3 py-1 rounded-full mb-3">
+        {/* Top badge */}
+        <div className="flex justify-center">
+          <div className="inline-flex items-center gap-1.5 bg-black/30 backdrop-blur-md border border-white/20 text-white/90 text-xs font-bold px-3.5 py-1.5 rounded-full tracking-wide">
             <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
             OFFICIAL PETITION
           </div>
-          <h1 className="text-6xl font-black text-white drop-shadow-xl tracking-tight leading-none mb-3">
-            #FREEHARRY
+        </div>
+
+        {/* Centre headline */}
+        <div className="flex flex-col items-center text-center gap-3">
+          <h1 className="text-6xl font-black text-white leading-none tracking-tight"
+            style={{ textShadow: '0 4px 24px rgba(0,0,0,0.6)' }}>
+            #FREE<br />HARRY
           </h1>
           <button
             onClick={() => setModalOpen(true)}
             disabled={count === 0}
-            className="flex items-baseline gap-2 hover:opacity-70 transition-opacity disabled:pointer-events-none"
+            className="flex items-center gap-2 bg-black/30 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 hover:bg-black/50 transition-colors disabled:pointer-events-none"
           >
-            <span className="text-3xl font-black text-white drop-shadow-lg">{count.toLocaleString()}</span>
-            <span className="text-white/70 text-sm font-medium">
+            <span className="text-xl font-black text-white">{count.toLocaleString()}</span>
+            <span className="text-white/70 text-sm">
               {count === 1 ? 'person agrees' : 'people agree'}
-              {count > 0 && <span className="text-red-300 ml-1">— see who →</span>}
+              {count > 0 && <span className="text-red-300 ml-1.5">see who →</span>}
             </span>
           </button>
         </div>
 
-        {/* Bottom — frosted glass form card */}
-        <div className="bg-white/10 backdrop-blur-md rounded-3xl p-5 border border-white/20 shadow-2xl flex flex-col gap-3">
-          <p className="text-white/80 text-sm text-center font-medium">
-            Harry deserves better. Add your voice.
+        {/* Bottom form card */}
+        <div className="flex flex-col gap-3">
+          <p className="text-white/60 text-xs text-center tracking-wide uppercase font-semibold">
+            Harry deserves better — add your name
           </p>
-          <SignForm glass onSigned={fetchSignatures} />
-          <button
-            onClick={() => setModalOpen(true)}
-            disabled={count === 0}
-            className="text-sm text-white/50 hover:text-white/80 transition-colors disabled:opacity-0 text-center"
-          >
-            See all {count} supporters →
-          </button>
+          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-4 border border-white/15 shadow-2xl">
+            <SignForm glass onSigned={fetchSignatures} />
+          </div>
+          {count > 0 && (
+            <button
+              onClick={() => setModalOpen(true)}
+              className="text-xs text-white/40 hover:text-white/70 transition-colors text-center"
+            >
+              See all {count} supporters →
+            </button>
+          )}
         </div>
       </div>
 

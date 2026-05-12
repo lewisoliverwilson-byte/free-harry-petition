@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const PASSWORDS = ['#FREEHARRY', 'MONTY']
+const PASSWORDS = ['MONTY']
 const STORAGE_KEY = 'petition_unlocked'
 
 export default function PasswordGate({ children }) {
