@@ -5,7 +5,7 @@ export default function HeroSection({ count, onViewSupporters }) {
       <img
         src="/harry.png"
         alt="Harry"
-        className="w-full h-full object-cover object-top"
+        className="w-full h-full object-cover object-[center_20%]"
       />
 
       {/* Gradient fade to background */}
