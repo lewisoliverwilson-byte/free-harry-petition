@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_API_URL;
+const BASE = 'https://py0dyheao1.execute-api.eu-west-1.amazonaws.com/prod';
 
 export async function getSignatures() {
   const res = await fetch(`${BASE}/signatures`);
