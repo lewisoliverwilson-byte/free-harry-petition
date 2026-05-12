@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { getSignatures } from './lib/api'
 import SignForm from './components/SignForm'
 import SupportersModal from './components/SupportersModal'
@@ -14,19 +14,20 @@ const SLIDES = [
   { src: '/IMG_2970.png',  pos: 'center 48%' },
 ]
 
-function BackgroundSlideshow() {
+function BackgroundSlideshow({ userSlides = [] }) {
+  const allSlides = useMemo(() => [...SLIDES, ...userSlides], [userSlides])
   const [current, setCurrent] = useState(0)
 
   useEffect(() => {
-    const t = setInterval(() => setCurrent(c => (c + 1) % SLIDES.length), 5000)
+    const t = setInterval(() => setCurrent(c => (c + 1) % allSlides.length), 5000)
     return () => clearInterval(t)
-  }, [])
+  }, [allSlides.length])
 
   return (
     <>
-      {SLIDES.map(({ src, pos }, i) => (
+      {allSlides.map(({ src, pos, key }, i) => (
         <img
-          key={src}
+          key={key ?? src}
           src={src}
           alt=""
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
@@ -58,10 +59,18 @@ export default function App() {
     return () => clearInterval(interval)
   }, [fetchSignatures])
 
+  const userSlides = useMemo(() =>
+    signatures
+      .filter(s => s.photo)
+      .slice(0, 12)
+      .map(s => ({ src: s.photo, pos: s.photo_position ?? 'center 35%', key: s.id })),
+    [signatures]
+  )
+
   return (
     <div className="h-dvh relative overflow-hidden w-full">
 
-      <BackgroundSlideshow />
+      <BackgroundSlideshow userSlides={userSlides} />
 
       {/* Overlay: dark on sides, lighter in centre so Harry's face shows through */}
       <div className="absolute inset-0"
