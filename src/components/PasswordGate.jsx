@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const PASSWORD = '#FREEHARRY'
+const PASSWORDS = ['#FREEHARRY', 'MONTY']
 const STORAGE_KEY = 'petition_unlocked'
 
 export default function PasswordGate({ children }) {
@@ -12,7 +12,7 @@ export default function PasswordGate({ children }) {
 
   function handleSubmit(e) {
     e.preventDefault()
-    if (input === PASSWORD) {
+    if (PASSWORDS.includes(input)) {
       sessionStorage.setItem(STORAGE_KEY, '1')
       setUnlocked(true)
     } else {
