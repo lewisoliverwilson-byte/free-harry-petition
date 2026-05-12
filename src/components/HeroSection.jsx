@@ -1,12 +1,12 @@
 export default function HeroSection({ count, onViewSupporters }) {
   return (
     <div className="flex flex-col items-center text-center">
-      <div className="relative mb-3">
+      <div className="relative mb-2">
         <div className="absolute inset-0 rounded-full bg-red-500 blur-xl opacity-25 scale-125" />
         <img
           src="/harry.png"
           alt="Harry"
-          className="relative w-20 h-20 rounded-full object-cover object-top border-[3px] border-white shadow-xl"
+          className="relative w-36 h-36 rounded-full object-cover object-top border-4 border-white shadow-xl"
         />
       </div>
 

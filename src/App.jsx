@@ -30,7 +30,7 @@ export default function App() {
 
   return (
     <div className="h-dvh bg-gray-50 flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-sm flex flex-col gap-4">
+      <div className="w-full max-w-sm flex flex-col gap-3">
         <HeroSection
           count={count}
           onViewSupporters={() => setModalOpen(true)}
