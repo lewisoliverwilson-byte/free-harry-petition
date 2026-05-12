@@ -29,12 +29,16 @@ export default function App() {
   const count = loading ? 0 : signatures.length
 
   return (
-    <div className="h-dvh bg-gray-50 flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-sm flex flex-col gap-3">
-        <HeroSection
-          count={count}
-          onViewSupporters={() => setModalOpen(true)}
-        />
+    <div className="h-dvh bg-gray-50 flex flex-col overflow-hidden max-w-sm mx-auto w-full">
+      <HeroSection
+        count={count}
+        onViewSupporters={() => setModalOpen(true)}
+      />
+
+      <div className="flex flex-col gap-3 px-4 pt-4 pb-4 flex-1 justify-center">
+        <p className="text-gray-400 text-sm text-center -mt-1">
+          Harry deserves better. Add your voice.
+        </p>
         <SignForm onSigned={fetchSignatures} />
         <button
           onClick={() => setModalOpen(true)}
