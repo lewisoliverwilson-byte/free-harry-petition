@@ -19,6 +19,11 @@ export default function SignForm({ onSigned }) {
       setSignerName(name.trim())
       setSigned(true)
       onSigned?.()
+      setTimeout(() => {
+        setSigned(false)
+        setName('')
+        setReason('')
+      }, 2500)
     } catch (err) {
       console.error('Sign error:', err)
       setError(`Error: ${err.message}`)
