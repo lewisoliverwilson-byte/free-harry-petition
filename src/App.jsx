@@ -34,7 +34,7 @@ export default function App() {
       <img
         src="/harry.png"
         alt="Harry"
-        className="absolute inset-0 w-full h-full object-cover object-[center_15%]"
+        className="absolute inset-0 w-full h-full object-cover object-[center_5%]"
       />
 
       {/* Multi-stop gradient: transparent top → heavy dark bottom */}
