@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { postSignature } from '../lib/api'
 
-export default function SignForm({ onSigned }) {
+export default function SignForm({ onSigned, glass = false }) {
   const [name, setName] = useState('')
   const [reason, setReason] = useState('')
   const [loading, setLoading] = useState(false)
@@ -32,12 +32,16 @@ export default function SignForm({ onSigned }) {
     }
   }
 
+  const inputClass = glass
+    ? 'w-full px-4 py-3 rounded-xl border border-white/30 bg-white/15 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/40 text-base backdrop-blur-sm'
+    : 'w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent text-base shadow-sm'
+
   if (signed) {
     return (
-      <div className="flex flex-col items-center gap-2 py-5 px-4 bg-green-50 rounded-2xl border border-green-200">
+      <div className={`flex flex-col items-center gap-2 py-4 px-4 rounded-2xl border ${glass ? 'bg-white/15 border-white/30' : 'bg-green-50 border-green-200'}`}>
         <div className="text-3xl">✅</div>
-        <p className="text-green-800 font-bold text-lg">You're on the list!</p>
-        <p className="text-green-600 text-sm">Thanks for standing with Harry, {signerName}.</p>
+        <p className={`font-bold text-lg ${glass ? 'text-white' : 'text-green-800'}`}>You're on the list!</p>
+        <p className={`text-sm ${glass ? 'text-white/70' : 'text-green-600'}`}>Thanks for standing with Harry, {signerName}.</p>
       </div>
     )
   }
@@ -51,7 +55,7 @@ export default function SignForm({ onSigned }) {
         placeholder="Your name"
         maxLength={60}
         required
-        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent text-base shadow-sm"
+        className={inputClass}
       />
       <textarea
         value={reason}
@@ -59,16 +63,16 @@ export default function SignForm({ onSigned }) {
         placeholder="Why should Harry be free? (optional)"
         maxLength={280}
         rows={2}
-        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent text-base shadow-sm resize-none"
+        className={`${inputClass} resize-none`}
       />
       <button
         type="submit"
         disabled={loading || !name.trim()}
-        className="w-full py-3.5 px-6 bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-lg rounded-xl shadow-lg shadow-red-200 transition-all duration-150 active:scale-95"
+        className="w-full py-3.5 px-6 bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-lg rounded-xl shadow-lg shadow-red-900/30 transition-all duration-150 active:scale-95"
       >
         {loading ? 'Signing…' : '✍️ Sign the Petition'}
       </button>
-      {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+      {error && <p className={`text-sm text-center ${glass ? 'text-red-300' : 'text-red-500'}`}>{error}</p>}
     </form>
   )
 }
